@@ -1,0 +1,19 @@
+{
+  "name": "faceblog",
+  "version": "1.0.0",
+  "description": "school project",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qiangsong889/faceBlog.git"
+  },
+  "author": "shayne song",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qiangsong889/faceBlog/issues"
+  },
+  "homepage": "https://github.com/qiangsong889/faceBlog#readme"
+}
