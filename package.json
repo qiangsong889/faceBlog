@@ -2,7 +2,7 @@
   "name": "faceblog",
   "version": "1.0.0",
   "description": "school project",
-  "main": "test.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +15,15 @@
   "bugs": {
     "url": "https://github.com/qiangsong889/faceBlog/issues"
   },
-  "homepage": "https://github.com/qiangsong889/faceBlog#readme"
+  "homepage": "https://github.com/qiangsong889/faceBlog#readme",
+  "devDependencies": {
+    "eslint": "^4.15.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-prettier": "^2.5.0",
+    "eslint-plugin-react": "^7.5.1",
+    "prettier": "^1.10.2"
+  }
 }
