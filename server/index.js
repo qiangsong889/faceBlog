@@ -10,6 +10,8 @@ app.use(bodyParser.json())
 app.use(express.static(path.resolve(__dirname, '../client/public')))
 app.use('/api/', routes);
 
-app.listen(3000, function(){
-    console.log('server now is listening on PORT 3000')
+const PORT = 3000;
+
+app.listen(PORT, function(){
+    console.log('server now is listening on PORT', PORT)
 })

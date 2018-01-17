@@ -19,7 +19,7 @@ Posts.sync()
   .then(()=> {
       console.log('connected to table Posts')
   })
-  .then((err)=> {
+  .catch((err)=> {
       console.log('Error connecting Posts table ===>', err)
   })
 
