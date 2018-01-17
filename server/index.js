@@ -7,7 +7,7 @@ const db = require('./db/models/sync')
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
-app.use(express.statc(path.resolve(__dirname, '../client/public')))
+app.use(express.static(path.resolve(__dirname, '../client/public')))
 app.use('/api/', routes);
 
 app.listen(3000, function(){

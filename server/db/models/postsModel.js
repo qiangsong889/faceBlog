@@ -1,4 +1,4 @@
-const Sequelize = reuqire('sequelize')
+const Sequelize = require('sequelize')
 const db = require('../')
 
 const postsModel = db.define('posts', {

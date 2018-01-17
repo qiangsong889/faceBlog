@@ -4,7 +4,7 @@ const db = require('../')
 const usersModel = db.define('users', {
     id: {
         type: Sequelize.INTEGER,
-        primarykey: true,
+        primaryKey: true,
         autoIncrement: true
     },
     userName: {

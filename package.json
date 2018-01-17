@@ -4,7 +4,8 @@
   "description": "school project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server-dev": "nodemon ./server"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,14 @@
     "eslint-plugin-prettier": "^2.5.0",
     "eslint-plugin-react": "^7.5.1",
     "prettier": "^1.10.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mysql": "^2.15.0",
+    "mysql2": "^1.5.1",
+    "nodemon": "^1.14.11",
+    "path": "^0.12.7",
+    "sequelize": "^4.31.2"
   }
 }
