@@ -3,8 +3,8 @@ import { render } from 'react-dom'
 import { BrowserRouter, Route } from 'react-router-dom'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
-import App from './components/app.jsx'
-import Login from './components/login'
+import App from './components/App.js'
+import Login from './components/Login'
 import store from "./store"
 
 

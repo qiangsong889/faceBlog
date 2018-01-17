@@ -2,13 +2,13 @@ import React from 'react';
 import base from '../firebaseAuth';
 
 class Login extends React.Component {
-  constructor(props) {
-    super(props);
+//   constructor(props) {
+//     super(props);
   
-    this.state = {
-      user: null
-    }
-  }
+//     this.state = {
+//       user: null
+//     }
+//   }
 
   render() {
       console.log('login render run')
@@ -23,6 +23,7 @@ class Login extends React.Component {
           <form className="card-body container">
             <button onClick={base.googleLogin} >Google</button>
             <button onClick={base.githubLogin} >GitHub</button>
+            <button onClick={base.logout} > logOut</button>
           </form>
         </div>
       </div>

@@ -2,8 +2,10 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import firebase from '../firebaseAuth'
-import activeUser from '../actions'
+import { activeUser } from '../actions'
 import Login from './Login'
+import base from '../firebaseAuth'
+import Search from './Search'
 
 
 
@@ -14,31 +16,26 @@ class App extends React.Component {
         if (user) {
           this.props.activeUser(user);
         } else {
-          return (
-            <div>
-              <Login />
-            </div>
-          )
+          this.props.activeUser(null);
         }
       })
-  }
-    
+}
+  
   render() {
-    if (this.props.active_user) {
       return (
         <div>
-          {/* <Search />
-          <Option /> */}
-          {this.props.active_user.displayName} has logged in!!!
+        {
+          this.props.active_user ? <div>
+          <Search />
+          {this.props.active_user.displayName} has logged innn!!!
         </div>
-      )
-    } else {
-      return (
+        :
         <div>
           <Login />
         </div>
-      )
-    }
+      }
+      </div>
+    )
   }
 }
 
@@ -51,7 +48,7 @@ function mapStateToProps(state) {
 function matchDispatchToProps(dispatch) {
     return bindActionCreators({
              activeUser: activeUser
-           })
+           }, dispatch)
 }
 
 export default connect(mapStateToProps, matchDispatchToProps)(App)

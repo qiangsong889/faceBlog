@@ -50,6 +50,7 @@ const base = {
       });
   },
   logout: () => {
+      console.log('you are trying to log out @!@!!!! inside of auth.logout()')
     auth.signOut();
   },
   auth: auth,
