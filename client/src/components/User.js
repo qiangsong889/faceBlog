@@ -1,8 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux' 
-import { selectUser } from '../actions'
+import { selectUser,loadUser } from '../actions'
 import axios from 'axios'
+
 
 
 class User extends React.Component {
@@ -18,10 +19,10 @@ class User extends React.Component {
         })
         .then(response=> {
             console.log('successfully fetch data of user from server here is the data', response.data)
-            this.props.userLoad(response.data)
+            this.props.loadUser(response.data)
         })
         .catch(err=> {
-            console.log('having problem fetching users data from server')
+            console.log('having problem fetching users data from server',err)
         })
     }
 
@@ -29,7 +30,7 @@ class User extends React.Component {
       return (
         <div>
         {
-            this.props.userInfo ? 
+            this.props.userLoad ? 
             <div>
                 this.props.userInfo is loaded!!!!
             </div>
@@ -45,14 +46,16 @@ class User extends React.Component {
 function mapStateToProps(state) {
     return {
         active_user: state.active_user,
-        userUID: state.userUID
+        userUID: state.userUID,
+        userLoad: state.userLoad
     }
 }
 
-function matchDispatchToProps() {
+function matchDispatchToProps(dispatch) {
     return bindActionCreators({
-        selectUser: selectUser
-    })
+        selectUser: selectUser,
+        loadUser: loadUser
+    }, dispatch)
 }
 
 export default connect(mapStateToProps, matchDispatchToProps)(User)

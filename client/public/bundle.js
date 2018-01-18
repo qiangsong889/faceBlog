@@ -52024,9 +52024,9 @@ var User = function (_React$Component) {
                 }
             }).then(function (response) {
                 console.log('successfully fetch data of user from server here is the data', response.data);
-                _this2.props.userLoad(response.data);
+                _this2.props.loadUser(response.data);
             }).catch(function (err) {
-                console.log('having problem fetching users data from server');
+                console.log('having problem fetching users data from server', err);
             });
         }
     }, {
@@ -52035,7 +52035,7 @@ var User = function (_React$Component) {
             return _react2.default.createElement(
                 'div',
                 null,
-                this.props.userInfo ? _react2.default.createElement(
+                this.props.userLoad ? _react2.default.createElement(
                     'div',
                     null,
                     'this.props.userInfo is loaded!!!!'
@@ -52054,14 +52054,16 @@ var User = function (_React$Component) {
 function mapStateToProps(state) {
     return {
         active_user: state.active_user,
-        userUID: state.userUID
+        userUID: state.userUID,
+        userLoad: state.userLoad
     };
 }
 
-function matchDispatchToProps() {
+function matchDispatchToProps(dispatch) {
     return (0, _redux.bindActionCreators)({
-        selectUser: _actions.selectUser
-    });
+        selectUser: _actions.selectUser,
+        loadUser: _actions.loadUser
+    }, dispatch);
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, matchDispatchToProps)(User);
