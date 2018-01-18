@@ -26,7 +26,8 @@ class App extends React.Component {
       return (
         <div>
         {
-          this.props.active_user ? <div>
+          this.props.active_user ? 
+          <div>
           <Search />
           <Options />
         </div>

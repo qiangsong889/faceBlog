@@ -33,6 +33,9 @@ class User extends React.Component {
             this.props.userLoad ? 
             <div>
                 this.props.userInfo is loaded!!!!
+                {/* <Posts />
+                <Bio />
+                <Friends /> */}
             </div>
             :
             <div>

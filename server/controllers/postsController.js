@@ -6,13 +6,6 @@ const postsController = {
       Posts.findAll({where:{userId: id}})
         .then(posts=> {
             console.log('query Posts table, result====>>>', posts)
-            // if(!posts.length){
-            //     cb(posts)
-            // }else{
-            //     Comments.getPostComments(res[0].id, (comments)=> {
-                    
-            //     })
-            // }
             commentsController.getPostComments(posts, comments=> {
                 cb({posts: posts, comments: comments})
             })
