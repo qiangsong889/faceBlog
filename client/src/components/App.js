@@ -6,7 +6,8 @@ import { activeUser } from '../actions'
 import Login from './Login'
 import base from '../firebaseAuth'
 import Search from './Search'
-
+import Options from './Options'
+import selectUser from '../actions'
 
 
 
@@ -14,7 +15,7 @@ class App extends React.Component {
   componentWillMount() {
     firebase.auth.onAuthStateChanged(user=> {
         if (user) {
-          this.props.activeUser(user);
+          this.props.activeUser(user)
         } else {
           this.props.activeUser(null);
         }
@@ -27,13 +28,13 @@ class App extends React.Component {
         {
           this.props.active_user ? <div>
           <Search />
-          {this.props.active_user.displayName} has logged innn!!!
+          <Options />
         </div>
         :
         <div>
           <Login />
         </div>
-      }
+       }
       </div>
     )
   }
@@ -47,7 +48,8 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
     return bindActionCreators({
-             activeUser: activeUser
+             activeUser: activeUser,
+             selectUser: selectUser 
            }, dispatch)
 }
 
