@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux' 
 import { selectUser,loadUser } from '../actions'
 import axios from 'axios'
+import Posts from './Posts'
+import Bio from './Bio'
 
 
 
@@ -11,14 +13,15 @@ class User extends React.Component {
         this.getUsersInfoFromServer();
     }
     getUsersInfoFromServer()  {
-        let uid = this.props.userUID ? this.props.userUID : this.props.active_user.uid
+        let uid = this.props.userUID ? this.props.userUID : this.props.active_user.user[0].userName
+        // console.log('inside of User componentWillMount this users uid should be activeusers uid+==>>',this.props.active_user , uid)
         axios.get('api/user', {
             params: {
                 uid: uid
             }
         })
         .then(response=> {
-            console.log('successfully fetch data of user from server here is the data', response.data)
+            console.log('!!!!!!!!!!!!!successfully fetch data of user from server here is the data', response.data)
             this.props.loadUser(response.data)
         })
         .catch(err=> {
@@ -33,9 +36,9 @@ class User extends React.Component {
             this.props.userLoad ? 
             <div>
                 this.props.userInfo is loaded!!!!
-                {/* <Posts />
-                <Bio />
-                <Friends /> */}
+                <Posts getUsersInfoFromServer={this.getUsersInfoFromServer.bind(this)}/>
+                <Bio update={this.getUsersInfoFromServer.bind(this)}/>
+                {/* <Friends /> */}
             </div>
             :
             <div>

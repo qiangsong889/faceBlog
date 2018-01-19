@@ -8,14 +8,25 @@ import base from '../firebaseAuth'
 import Search from './Search'
 import Options from './Options'
 import selectUser from '../actions'
-
+import axios from 'axios'
 
 
 class App extends React.Component {
   componentWillMount() {
     firebase.auth.onAuthStateChanged(user=> {
         if (user) {
-          this.props.activeUser(user)
+          axios.get('api/user', {
+            params: {
+                uid: user.uid
+            }
+          })
+          .then(response=> {
+              console.log('successfully fetch data of user from server here is the data', response.data)
+              this.props.activeUser(response.data);
+          })
+          .catch(err=> {
+              console.log('having problem fetching users data from server',err)
+          })
         } else {
           this.props.activeUser(null);
         }

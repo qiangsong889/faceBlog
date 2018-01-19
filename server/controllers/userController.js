@@ -6,12 +6,12 @@ const commentsController = require('./commentsController')
 const userController = {
     getUsersInfo: (req, res)=> {
         let query = req.query
-        console.log('inside of userController. this is the req.query', req.query)
+        // console.log('inside of userController. this is the req.query', req.query)
         Users.findAll( {where: {userName: query.uid}})
           .then(user=> {
-            console.log('query users table result ===>>>>', user)
+            // console.log('query users table result ===>>>>', user)
             if(user.length){
-                postsController.getUsersPosts(user.id,posts=> {
+                postsController.getUsersPosts(user[0].id,posts=> {
                     commentsController.getUsersComments(user.id, comments=> {
                         res.send({user: user, posts: posts, comments: comments})
                     })
@@ -21,7 +21,7 @@ const userController = {
                     userName: query.uid
                 })
                 .then(response=> {
-                    console.log('here is the response if user just been created ==>>', response)
+                    // console.log('here is the response if user just been created ==>>', response)
                     res.send({userName: uid, comments: 'user has no info cause just created'})
                 })
                 .catch(err=> {console.log('having problem creating user into table==>>>',err)})
@@ -32,6 +32,30 @@ const userController = {
           .catch(err=> {
               console.log('problem query users table err ====>>>', err)
           })
+    },
+    getTargetUserInfo: (req, res)=>{
+        // console.log('getTargetUserInfo, req.query', req.query)
+        Users.findAll({
+            where: {id: req.query.userId}
+        })
+        .then(response=> {
+            res.send(response)
+        })
+        .catch(err=> {console.log('Error quering getTargetUserInfo!!!===> ,',err)})
+    },
+    editBio: (req, res)=> {
+        console.log('editBio ',req.body)
+        const bio={
+            displayName: req.body.displayName,
+            bio: req.body.bio,
+            location: req.body.location,
+            school: req.body.school
+        }
+        Users.update(bio, {where: {userName: req.body.userName}})
+             .then(response=> {
+                 res.send()
+             })
+             .catch(err=> {console.log('Error update bio', err)})
     }
 }
 

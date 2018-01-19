@@ -12,10 +12,10 @@ export const selectOption= (option) => {
     }
 }
 
-export const selectUser = (uid) => {
+export const selectUser = (user) => {
     return {
         type: "USER_UID",
-        payload: uid
+        payload: user.uid
     }
 }
 
@@ -25,3 +25,10 @@ export const loadUser = (info) => {
         payload: info
     }
 }       
+
+export const toggleCommentAction = (id) => {
+    return {
+        type: "COMMENT_TOGGLE",
+        payload: id
+    }
+}

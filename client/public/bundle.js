@@ -17272,10 +17272,10 @@ var selectOption = exports.selectOption = function selectOption(option) {
     };
 };
 
-var selectUser = exports.selectUser = function selectUser(uid) {
+var selectUser = exports.selectUser = function selectUser(user) {
     return {
         type: "USER_UID",
-        payload: uid
+        payload: user.uid
     };
 };
 
@@ -17283,6 +17283,13 @@ var loadUser = exports.loadUser = function loadUser(info) {
     return {
         type: "USER_LOAD",
         payload: info
+    };
+};
+
+var toggleCommentAction = exports.toggleCommentAction = function toggleCommentAction(id) {
+    return {
+        type: "COMMENT_TOGGLE",
+        payload: id
     };
 };
 
@@ -17326,17 +17333,7 @@ var Login = function (_React$Component) {
 
   _createClass(Login, [{
     key: 'render',
-
-    //   constructor(props) {
-    //     super(props);
-
-    //     this.state = {
-    //       user: null
-    //     }
-    //   }
-
     value: function render() {
-      console.log('login render run');
       return _react2.default.createElement(
         'div',
         null,
@@ -17370,11 +17367,6 @@ var Login = function (_React$Component) {
               'button',
               { onClick: _firebaseAuth2.default.githubLogin },
               'GitHub'
-            ),
-            _react2.default.createElement(
-              'button',
-              { onClick: _firebaseAuth2.default.logout },
-              ' logOut'
             )
           )
         )
@@ -39583,6 +39575,10 @@ var _Options = __webpack_require__(277);
 
 var _Options2 = _interopRequireDefault(_Options);
 
+var _axios = __webpack_require__(295);
+
+var _axios2 = _interopRequireDefault(_axios);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -39607,7 +39603,16 @@ var App = function (_React$Component) {
 
       _firebaseAuth2.default.auth.onAuthStateChanged(function (user) {
         if (user) {
-          _this2.props.activeUser(user);
+          _axios2.default.get('api/user', {
+            params: {
+              uid: user.uid
+            }
+          }).then(function (response) {
+            console.log('successfully fetch data of user from server here is the data', response.data);
+            _this2.props.activeUser(response.data);
+          }).catch(function (err) {
+            console.log('having problem fetching users data from server', err);
+          });
         } else {
           _this2.props.activeUser(null);
         }
@@ -51990,6 +51995,14 @@ var _axios = __webpack_require__(295);
 
 var _axios2 = _interopRequireDefault(_axios);
 
+var _Posts = __webpack_require__(316);
+
+var _Posts2 = _interopRequireDefault(_Posts);
+
+var _Bio = __webpack_require__(320);
+
+var _Bio2 = _interopRequireDefault(_Bio);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52017,13 +52030,14 @@ var User = function (_React$Component) {
         value: function getUsersInfoFromServer() {
             var _this2 = this;
 
-            var uid = this.props.userUID ? this.props.userUID : this.props.active_user.uid;
+            var uid = this.props.userUID ? this.props.userUID : this.props.active_user.user[0].userName;
+            // console.log('inside of User componentWillMount this users uid should be activeusers uid+==>>',this.props.active_user , uid)
             _axios2.default.get('api/user', {
                 params: {
                     uid: uid
                 }
             }).then(function (response) {
-                console.log('successfully fetch data of user from server here is the data', response.data);
+                console.log('!!!!!!!!!!!!!successfully fetch data of user from server here is the data', response.data);
                 _this2.props.loadUser(response.data);
             }).catch(function (err) {
                 console.log('having problem fetching users data from server', err);
@@ -52038,7 +52052,9 @@ var User = function (_React$Component) {
                 this.props.userLoad ? _react2.default.createElement(
                     'div',
                     null,
-                    'this.props.userInfo is loaded!!!!'
+                    'this.props.userInfo is loaded!!!!',
+                    _react2.default.createElement(_Posts2.default, { getUsersInfoFromServer: this.getUsersInfoFromServer.bind(this) }),
+                    _react2.default.createElement(_Bio2.default, { update: this.getUsersInfoFromServer.bind(this) })
                 ) : _react2.default.createElement(
                     'div',
                     null,
@@ -52386,13 +52402,18 @@ var _userLoad = __webpack_require__(315);
 
 var _userLoad2 = _interopRequireDefault(_userLoad);
 
+var _toggleComment = __webpack_require__(317);
+
+var _toggleComment2 = _interopRequireDefault(_toggleComment);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var allReducers = (0, _redux.combineReducers)({
     active_user: _active_user_reducers2.default,
     option: _option2.default,
     userUID: _userUID2.default,
-    userLoad: _userLoad2.default
+    userLoad: _userLoad2.default,
+    toggleComment: _toggleComment2.default
 });
 
 module.exports = allReducers;
@@ -54061,6 +54082,559 @@ exports.default = function () {
     }
     return state;
 };
+
+/***/ }),
+/* 316 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(26);
+
+var _redux = __webpack_require__(15);
+
+var _axios = __webpack_require__(295);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _actions = __webpack_require__(126);
+
+var _PostEntry = __webpack_require__(318);
+
+var _PostEntry2 = _interopRequireDefault(_PostEntry);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Posts = function (_React$Component) {
+    _inherits(Posts, _React$Component);
+
+    function Posts(props) {
+        _classCallCheck(this, Posts);
+
+        return _possibleConstructorReturn(this, (Posts.__proto__ || Object.getPrototypeOf(Posts)).call(this, props));
+    }
+
+    _createClass(Posts, [{
+        key: 'handleSubmitPostButtonClick',
+        value: function handleSubmitPostButtonClick() {
+            var _this2 = this;
+
+            //   let post = document.getElementById('postText').value
+            var payload = {
+                post: document.getElementById('postText').value,
+                img: null,
+                userId: this.props.userLoad.user[0].id
+            };
+            console.log('here is the payload!!===>>>>', payload);
+            _axios2.default.post('api/post', payload).then(function (res) {
+                console.log('successfully post post to server');
+                _this2.props.getUsersInfoFromServer();
+                document.getElementById('postText').value = '';
+            }).catch(function (err) {
+                console.log('getting error tring to submit post, ===>>', err);
+            });
+        }
+    }, {
+        key: 'postBox',
+        value: function postBox() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.props.active_user.user[0].userName === this.props.userLoad.user[0].userName ? _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement('textarea', { id: 'postText' }),
+                    _react2.default.createElement(
+                        'button',
+                        { id: 'button-submitPost', onClick: this.handleSubmitPostButtonClick.bind(this) },
+                        'Submit Post'
+                    )
+                ) : _react2.default.createElement('div', null),
+                _react2.default.createElement('br', null),
+                _react2.default.createElement('br', null),
+                _react2.default.createElement('br', null)
+            );
+        }
+        // commentBox(postId) {
+        //     return(
+        //         <div>
+        //             {
+        //             !this.props.toggleComment.status?
+        //             <div>
+        //             </div>
+        //             :
+        //             <div>
+        //             <textarea id='commentText' defaultValue='comment goes here'/>
+        //             <button id='button-submitComment' value={postId} onClick={this.handleSubmitCommentButtonClick.bind(this)}>submit comments</button>
+        //             </div>  
+        //             }
+        //         </div>
+        //     )
+
+        // }
+        // commentBox(postId) {
+        //     return(
+        //         <div className="commentBox">
+
+        //         </div>
+        //     )
+        // }
+
+        // handleToggleButtonClick(id) {
+        //     console.log('toggle button clicked',id)
+        //     this.props.toggleCommentAction(id)
+        // }
+
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this3 = this;
+
+            console.log('Posts component has been run, current user and userLoad', this.props.active_user, this.props.userLoad);
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.postBox(),
+                this.props.userLoad.posts.map(function (post) {
+                    return _react2.default.createElement(_PostEntry2.default, { update: _this3.props.getUsersInfoFromServer, post: post, key: post.id });
+                })
+            );
+        }
+    }]);
+
+    return Posts;
+}(_react2.default.Component);
+
+function mapStateToProps(state) {
+    return {
+        userLoad: state.userLoad,
+        active_user: state.active_user,
+        toggleComment: state.toggleComment
+    };
+}
+function matchDispatchToProps(dispatch) {
+    return (0, _redux.bindActionCreators)({
+        toggleCommentAction: _actions.toggleCommentAction
+    }, dispatch);
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, matchDispatchToProps)(Posts);
+
+/***/ }),
+/* 317 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case "COMMENT_TOGGLE":
+            return action.payload;
+            break;
+    }
+    return state;
+};
+
+/***/ }),
+/* 318 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _axios = __webpack_require__(295);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _reactRedux = __webpack_require__(26);
+
+var _PostCommentsEntry = __webpack_require__(319);
+
+var _PostCommentsEntry2 = _interopRequireDefault(_PostCommentsEntry);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PostEntry = function (_React$Component) {
+    _inherits(PostEntry, _React$Component);
+
+    function PostEntry(props) {
+        _classCallCheck(this, PostEntry);
+
+        var _this = _possibleConstructorReturn(this, (PostEntry.__proto__ || Object.getPrototypeOf(PostEntry)).call(this, props));
+
+        _this.state = {
+            boxShowing: false,
+            comments: []
+        };
+        return _this;
+    }
+
+    _createClass(PostEntry, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            this.update();
+        }
+    }, {
+        key: 'update',
+        value: function update() {
+            var _this2 = this;
+
+            _axios2.default.get('api/comment', {
+                params: {
+                    postId: this.props.post.id
+                }
+            }).then(function (response) {
+                _this2.setState({
+                    comments: response.data
+                });
+
+                // console.log('here shouyld be all the comments of each repo,', this.state.comments)
+            }).catch(function (err) {
+                console.log('Error having problem getting comment of post', err);
+            });
+        }
+    }, {
+        key: 'handleButtonClick',
+        value: function handleButtonClick() {
+            console.log('button been clikced', this.state.boxShowing);
+            this.setState({
+                boxShowing: !this.state.boxShowing
+            });
+        }
+    }, {
+        key: 'handleSubmitBottonClick',
+        value: function handleSubmitBottonClick() {
+            var _this3 = this;
+
+            var payload = {
+                comments: document.getElementById('textarea').value,
+                userId: this.props.active_user.user[0].id,
+                postId: this.props.post.id
+            };
+            _axios2.default.post('api/comment', payload).then(function (res) {
+                // console.log('successfully post comment to server here is the response', res)
+                _this3.update();
+                _this3.setState({
+                    boxShowing: false
+                });
+            }).catch(function (err) {
+                console.log('Error send comments', err);
+            });
+            console.log('here is the payload', payload);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            // console.log('passssssing it down to postcommentsEntry,', this.state.comments)
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(
+                    'div',
+                    null,
+                    'post:',
+                    this.props.post.post,
+                    this.props.post.img ? _react2.default.createElement(
+                        'div',
+                        null,
+                        'img: ',
+                        this.props.post.img
+                    ) : _react2.default.createElement('div', null)
+                ),
+                this.state.comments ? _react2.default.createElement(
+                    'div',
+                    null,
+                    this.state.comments.map(function (comment) {
+                        return _react2.default.createElement(_PostCommentsEntry2.default, { key: comment.id, comment: comment });
+                    })
+                ) : _react2.default.createElement('div', null),
+                this.state.boxShowing ? _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(
+                        'button',
+                        { onClick: this.handleButtonClick.bind(this) },
+                        'comment'
+                    ),
+                    _react2.default.createElement('textarea', { id: 'textarea' }),
+                    _react2.default.createElement(
+                        'button',
+                        { onClick: this.handleSubmitBottonClick.bind(this) },
+                        'submit'
+                    )
+                ) : _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(
+                        'button',
+                        { onClick: this.handleButtonClick.bind(this) },
+                        'comment'
+                    )
+                ),
+                _react2.default.createElement('br', null),
+                _react2.default.createElement('br', null),
+                _react2.default.createElement('br', null),
+                _react2.default.createElement('br', null),
+                _react2.default.createElement('br', null)
+            );
+        }
+    }]);
+
+    return PostEntry;
+}(_react2.default.Component);
+
+function mapStateToProps(state) {
+    return {
+        active_user: state.active_user
+    };
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(PostEntry);
+
+/***/ }),
+/* 319 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _axios = __webpack_require__(295);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PostCommentsEntry = function (_React$Component) {
+    _inherits(PostCommentsEntry, _React$Component);
+
+    function PostCommentsEntry(props) {
+        _classCallCheck(this, PostCommentsEntry);
+
+        var _this = _possibleConstructorReturn(this, (PostCommentsEntry.__proto__ || Object.getPrototypeOf(PostCommentsEntry)).call(this, props));
+
+        _this.state = {
+            user: {}
+        };
+        return _this;
+    }
+
+    _createClass(PostCommentsEntry, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            var _this2 = this;
+
+            _axios2.default.get('api/targetUser', {
+                params: { userId: this.props.comment.userId }
+            }).then(function (res) {
+                _this2.setState({
+                    user: res.data[0]
+                });
+            }).catch(function (err) {
+                console.log('Error having problem fetching the comments of post,', err);
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.state.user.userName,
+                ': ',
+                this.props.comment.comments,
+                _react2.default.createElement('br', null)
+            );
+        }
+    }]);
+
+    return PostCommentsEntry;
+}(_react2.default.Component);
+
+exports.default = PostCommentsEntry;
+
+/***/ }),
+/* 320 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(26);
+
+var _axios = __webpack_require__(295);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Bio = function (_React$Component) {
+    _inherits(Bio, _React$Component);
+
+    function Bio(props) {
+        _classCallCheck(this, Bio);
+
+        var _this = _possibleConstructorReturn(this, (Bio.__proto__ || Object.getPrototypeOf(Bio)).call(this, props));
+
+        _this.state = {
+            toggle: false
+        };
+        return _this;
+    }
+
+    _createClass(Bio, [{
+        key: 'toggleBio',
+        value: function toggleBio() {
+            var _this2 = this;
+
+            this.setState({
+                toggle: !this.state.toggle
+            });
+            if (this.state.toggle) {
+                var bioButton = document.getElementsByClassName('bioInfo');
+                var bio = {
+                    userName: this.props.active_user.user[0].userName,
+                    displayName: bioButton[0].value,
+                    bio: bioButton[1].value,
+                    location: bioButton[2].value,
+                    school: bioButton[3].value
+                };
+                console.log('toggleBio run');
+                _axios2.default.post('api/bio', bio).then(function (res) {
+                    console.log('here is the response', res);
+                    _this2.props.update();
+                }).catch(function (err) {
+                    console.log('Error doing axios post api/bio', err);
+                });
+            }
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                'displayName: ',
+                this.props.userLoad.user[0].displayName,
+                this.state.toggle ? _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.user[0].displayName })
+                ) : _react2.default.createElement('div', null),
+                'bio: ',
+                this.props.userLoad.user[0].bio,
+                this.state.toggle ? _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.user[0].bio })
+                ) : _react2.default.createElement('div', null),
+                'location: ',
+                this.props.userLoad.user[0].location,
+                this.state.toggle ? _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.user[0].location })
+                ) : _react2.default.createElement('div', null),
+                'school: ',
+                this.props.userLoad.user[0].school,
+                this.state.toggle ? _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.user[0].school })
+                ) : _react2.default.createElement('div', null),
+                _react2.default.createElement(
+                    'button',
+                    { onClick: this.toggleBio.bind(this) },
+                    'edit bio'
+                )
+            );
+        }
+    }]);
+
+    return Bio;
+}(_react2.default.Component);
+
+function mapStateToProps(state) {
+    return {
+        userLoad: state.userLoad,
+        active_user: state.active_user
+    };
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(Bio);
 
 /***/ })
 /******/ ]);
