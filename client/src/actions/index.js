@@ -12,10 +12,10 @@ export const selectOption= (option) => {
     }
 }
 
-export const selectUser = (uid) => {
+export const selectUser = (id) => {
     return {
-        type: "USER_UID",
-        payload: uid
+        type: "USER_ID",
+        payload: id
     }
 }
 

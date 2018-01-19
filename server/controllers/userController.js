@@ -7,7 +7,7 @@ const userController = {
     getUsersInfo: (req, res)=> {
         let query = req.query
         // console.log('inside of userController. this is the req.query', req.query)
-        Users.findAll( {where: {userName: query.uid}})
+        Users.findAll( {where: {userName: query.userName}})
           .then(user=> {
             // console.log('query users table result ===>>>>', user)
             if(user.length){
@@ -20,12 +20,12 @@ const userController = {
             }else{
                 console.log('here is the query when you tring to create user', query)
                 Users.create({
-                    userName: query.uid,
+                    userName: query.userName,
                     displayName: query.displayName
                 })
                 .then(response=> {
                     // console.log('here is the response if user just been created ==>>', response)
-                    Users.findAll( {where: {userName: query.uid}})
+                    Users.findAll( {where: {userName: query.userName}})
                          .then(response=> {
                              res.send(response[0])
                          })

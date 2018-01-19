@@ -10,14 +10,14 @@ import Bio from './Bio'
 
 class User extends React.Component {
     componentWillMount() {
-        if(!this.props.userUID){
-            this.props.selectUser(this.props.active_user.userName)
+        if(!this.props.userId){
+            this.props.selectUser(this.props.active_user.id)
             this.props.loadUser(this.props.active_user)
         }else{
 
             // this.getUsersInfoFromServer();
-            axios.get('api/user', {
-                params:{uid: this.props.userUID}
+            axios.get('api/targetUser', {
+                params:{userId: this.props.userId}
             })
             .then(res=> {
                 this.props.loadUser(res.data)
@@ -49,7 +49,7 @@ class User extends React.Component {
             <div>
                 this.props.userInfo is loaded!!!!
                 <Posts />
-                <Bio />
+                {/* <Bio /> */}
                 {/* <Friends /> */}
             </div>
             :
@@ -64,10 +64,10 @@ class User extends React.Component {
 function mapStateToProps(state) {
     return {
         active_user: state.active_user,
-        userUID: state.userUID,
+        userId: state.userId,
         userLoad: state.userLoad,
-        userUID: state.userUID
     }
+
 }
 
 function matchDispatchToProps(dispatch) {

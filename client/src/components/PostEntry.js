@@ -11,7 +11,7 @@ class PostEntry extends React.Component {
             comments:[]
         }
     }
-    componentWillMount() {
+    componentDidMount() {
         this.update()
     }
     update() {

@@ -1,6 +1,6 @@
 export default (state=null, action)=> {
     switch(action.type) {
-        case "USER_UID":
+        case "USER_ID":
           return action.payload;
           break;
     }

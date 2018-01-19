@@ -14,7 +14,7 @@ class Posts extends React.Component{
     }
     update() {
         axios.get('api/post', {
-            params: {userId : this.props.userLoad.id  
+            params: {userId : this.props.userId
             }
         })
         .then(res=> {
@@ -108,7 +108,7 @@ class Posts extends React.Component{
                 :
                 <div>
                 {this.props.postsLoad.map(post => {
-                  return <PostEntry update={this.props.getUsersInfoFromServer} post={post} key={post.id}/>    
+                  return <PostEntry post={post} key={post.id}/>    
                 })}
                 </div>
                 }
@@ -124,6 +124,7 @@ function mapStateToProps(state) {
         userLoad: state.userLoad,
         active_user: state.active_user,
         toggleComment: state.toggleComment,
+        userId: state.userId
     }
 }
 function matchDispatchToProps(dispatch) {

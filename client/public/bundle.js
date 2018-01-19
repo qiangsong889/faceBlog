@@ -9008,10 +9008,10 @@ var selectOption = exports.selectOption = function selectOption(option) {
     };
 };
 
-var selectUser = exports.selectUser = function selectUser(uid) {
+var selectUser = exports.selectUser = function selectUser(id) {
     return {
-        type: "USER_UID",
-        payload: uid
+        type: "USER_ID",
+        payload: id
     };
 };
 
@@ -40298,7 +40298,7 @@ var App = function (_React$Component) {
         if (user) {
           _axios2.default.get('api/user', {
             params: {
-              uid: user.uid,
+              userName: user.uid,
               displayName: user.displayName
             }
           }).then(function (response) {
@@ -52730,14 +52730,14 @@ var User = function (_React$Component) {
         value: function componentWillMount() {
             var _this2 = this;
 
-            if (!this.props.userUID) {
-                this.props.selectUser(this.props.active_user.userName);
+            if (!this.props.userId) {
+                this.props.selectUser(this.props.active_user.id);
                 this.props.loadUser(this.props.active_user);
             } else {
 
                 // this.getUsersInfoFromServer();
-                _axios2.default.get('api/user', {
-                    params: { uid: this.props.userUID }
+                _axios2.default.get('api/targetUser', {
+                    params: { userId: this.props.userId }
                 }).then(function (res) {
                     _this2.props.loadUser(res.data);
                 }).catch(function (err) {
@@ -52771,8 +52771,7 @@ var User = function (_React$Component) {
                     'div',
                     null,
                     'this.props.userInfo is loaded!!!!',
-                    _react2.default.createElement(_Posts2.default, null),
-                    _react2.default.createElement(_Bio2.default, null)
+                    _react2.default.createElement(_Posts2.default, null)
                 ) : _react2.default.createElement(
                     'div',
                     null,
@@ -52786,11 +52785,11 @@ var User = function (_React$Component) {
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
-    return _defineProperty({
+    return {
         active_user: state.active_user,
-        userUID: state.userUID,
+        userId: state.userId,
         userLoad: state.userLoad
-    }, 'userUID', state.userUID);
+    };
 }
 
 function matchDispatchToProps(dispatch) {
@@ -53749,7 +53748,7 @@ var Posts = function (_React$Component) {
             var _this2 = this;
 
             _axios2.default.get('api/post', {
-                params: { userId: this.props.userLoad.id
+                params: { userId: this.props.userId
                 }
             }).then(function (res) {
                 _this2.props.loadPosts(res.data);
@@ -53834,8 +53833,6 @@ var Posts = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this4 = this;
-
             console.log('Posts component has been run, current user and userLoad', this.props);
             return _react2.default.createElement(
                 'div',
@@ -53849,7 +53846,7 @@ var Posts = function (_React$Component) {
                     'div',
                     null,
                     this.props.postsLoad.map(function (post) {
-                        return _react2.default.createElement(_PostEntry2.default, { update: _this4.props.getUsersInfoFromServer, post: post, key: post.id });
+                        return _react2.default.createElement(_PostEntry2.default, { post: post, key: post.id });
                     })
                 )
             );
@@ -53864,7 +53861,8 @@ function mapStateToProps(state) {
         postsLoad: state.postsLoad,
         userLoad: state.userLoad,
         active_user: state.active_user,
-        toggleComment: state.toggleComment
+        toggleComment: state.toggleComment,
+        userId: state.userId
     };
 }
 function matchDispatchToProps(dispatch) {
@@ -53927,8 +53925,8 @@ var PostEntry = function (_React$Component) {
     }
 
     _createClass(PostEntry, [{
-        key: 'componentWillMount',
-        value: function componentWillMount() {
+        key: 'componentDidMount',
+        value: function componentDidMount() {
             this.update();
         }
     }, {
@@ -54569,9 +54567,9 @@ var _option = __webpack_require__(316);
 
 var _option2 = _interopRequireDefault(_option);
 
-var _userUID = __webpack_require__(317);
+var _userId = __webpack_require__(321);
 
-var _userUID2 = _interopRequireDefault(_userUID);
+var _userId2 = _interopRequireDefault(_userId);
 
 var _userLoad = __webpack_require__(318);
 
@@ -54590,7 +54588,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var allReducers = (0, _redux.combineReducers)({
     active_user: _active_user_reducers2.default,
     option: _option2.default,
-    userUID: _userUID2.default,
+    userId: _userId2.default,
     userLoad: _userLoad2.default,
     toggleComment: _toggleComment2.default,
     postsLoad: _postsLoad2.default
@@ -54648,29 +54646,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 317 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-exports.default = function () {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-    var action = arguments[1];
-
-    switch (action.type) {
-        case "USER_UID":
-            return action.payload;
-            break;
-    }
-    return state;
-};
-
-/***/ }),
+/* 317 */,
 /* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -54742,6 +54718,29 @@ exports.default = function () {
 
     switch (action.type) {
         case "HAHA":
+            return action.payload;
+            break;
+    }
+    return state;
+};
+
+/***/ }),
+/* 321 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case "USER_ID":
             return action.payload;
             break;
     }
