@@ -11,11 +11,12 @@ const userController = {
           .then(user=> {
             // console.log('query users table result ===>>>>', user)
             if(user.length){
-                postsController.getUsersPosts(user[0].id,posts=> {
-                    commentsController.getUsersComments(user.id, comments=> {
-                        res.send({user: user, posts: posts, comments: comments})
-                    })
-                })
+                // postsController.getUsersPosts(user[0].id,posts=> {
+                //     commentsController.getUsersComments(user.id, comments=> {
+                //         res.send({user: user, posts: posts, comments: comments})
+                //     })
+                // })
+                res.send(user[0])
             }else{
                 Users.create({
                     userName: query.uid
@@ -55,7 +56,7 @@ const userController = {
              .then(response=> {
                  res.send()
              })
-             .catch(err=> {console.log('Error update bio', err)})
+             .catch(err=> {console.log('Error update bio',err)})
     }
 }
 

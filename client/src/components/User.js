@@ -10,24 +10,36 @@ import Bio from './Bio'
 
 class User extends React.Component {
     componentWillMount() {
-        this.getUsersInfoFromServer();
+        if(!this.props.userUID){
+            this.props.selectUser(this.props.active_user.userName)
+            this.props.loadUser(this.props.active_user)
+        }else{
+
+            // this.getUsersInfoFromServer();
+            axios.get('api/user', {
+                params:{uid: this.props.userUID}
+            })
+            .then(res=> {
+                this.props.loadUser(res.data)
+            })
+            .catch(err=>{console.log('Error fetching uses information',err)})
+        }
     }
-    getUsersInfoFromServer()  {
-        let uid = this.props.userUID ? this.props.userUID : this.props.active_user.user[0].userName
-        // console.log('inside of User componentWillMount this users uid should be activeusers uid+==>>',this.props.active_user , uid)
-        axios.get('api/user', {
-            params: {
-                uid: uid
-            }
-        })
-        .then(response=> {
-            console.log('!!!!!!!!!!!!!successfully fetch data of user from server here is the data', response.data)
-            this.props.loadUser(response.data)
-        })
-        .catch(err=> {
-            console.log('having problem fetching users data from server',err)
-        })
-    }
+    // getUsersInfoFromServer()  {
+    //     let uid=()=> {
+    //         if(this.props.userLoad){
+    //             return this.props.userLoad.userName
+    //         }else{
+    //             this.props.loadUser(this.props.active_user)
+    //             return this.props.userLoad.userName
+    //         }
+
+    //     }
+    //     console.log('inside of User componentWillMount this users uid should be activeusers uid+==>>',this.props.active_user , uid)
+    //     if(!this.props.userLoad){
+    //         this.props.loadUser(this.props.active_user)
+    //     }
+    // }
 
     render() {
       return (
@@ -36,8 +48,8 @@ class User extends React.Component {
             this.props.userLoad ? 
             <div>
                 this.props.userInfo is loaded!!!!
-                <Posts getUsersInfoFromServer={this.getUsersInfoFromServer.bind(this)}/>
-                <Bio update={this.getUsersInfoFromServer.bind(this)}/>
+                <Posts />
+                {/* <Bio update={this.getUsersInfoFromServer.bind(this)}/> */}
                 {/* <Friends /> */}
             </div>
             :
@@ -53,14 +65,16 @@ function mapStateToProps(state) {
     return {
         active_user: state.active_user,
         userUID: state.userUID,
-        userLoad: state.userLoad
+        userLoad: state.userLoad,
+        userUID: state.userUID
     }
 }
 
 function matchDispatchToProps(dispatch) {
     return bindActionCreators({
         selectUser: selectUser,
-        loadUser: loadUser
+        loadUser: loadUser,
+        selectUser: selectUser
     }, dispatch)
 }
 

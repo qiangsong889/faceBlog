@@ -41,16 +41,16 @@ class PostEntry extends React.Component {
 
         let payload = {
             comments: document.getElementById('textarea').value,
-            userId: this.props.active_user.user[0].id,
+            userId: this.props.userLoad.id,
             postId: this.props.post.id
         }
         axios.post('api/comment', payload)
              .then(res=> {
                 // console.log('successfully post comment to server here is the response', res)
-                this.update();
                 this.setState({
                     boxShowing: false
                 })
+                this.update();
              })
              .catch(err=> {
                  console.log('Error send comments', err)
@@ -107,7 +107,8 @@ class PostEntry extends React.Component {
 }
 function mapStateToProps(state){
   return {
-      active_user: state.active_user
+      active_user: state.active_user,
+      userLoad: state.userLoad
   }
 }
 

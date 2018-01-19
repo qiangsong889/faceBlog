@@ -2,12 +2,12 @@ const Posts = require('../db/models/postsModel')
 const commentsController = require('./commentsController')
 
 const postsController = {
-    getUsersPosts: (id, cb)=> {
-      Posts.findAll({where:{userId: id}})
+    getUsersPosts: (req, res)=> {
+      Posts.findAll({where:{userId: req.query.userId}})
         .then(posts=> {
             // console.log('query Posts table, result====>>>', posts)
 
-                cb(posts);
+                res.send(posts)
 
         })
         .catch(err=> {

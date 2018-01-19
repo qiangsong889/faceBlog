@@ -4,13 +4,15 @@ import option from './option'
 import userUID from './userUID'
 import userLoad from './userLoad'
 import toggleComment from './toggleComment'
+import postsLoad from './postsLoad'
 
 const allReducers = combineReducers({
     active_user: active_user,
     option: option,
     userUID: userUID,
     userLoad: userLoad,
-    toggleComment: toggleComment
+    toggleComment: toggleComment,
+    postsLoad: postsLoad
 })
 
 module.exports = allReducers;

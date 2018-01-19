@@ -8,6 +8,7 @@ router.route('/user')
   .get(userController.getUsersInfo)
 
 router.route('/post')
+  .get(postsController.getUsersPosts)
   .post(postsController.addPost)
 
 router.route('/comment')
