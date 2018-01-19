@@ -2,11 +2,13 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import firebase from '../firebaseAuth'
+import { selectUser } from '../actions'
 
 class Search extends React.Component{
 
     handleLogoutClick() {
         console.log('logout button been clicked')
+        this.props.selectUser(null);
         firebase.logout();
         //
     }
@@ -37,7 +39,13 @@ function mapStateToProps(state) {
     }
 }
 
- export default connect(mapStateToProps)(Search);
+function matchDispatchToProps(dispatch) {
+    return bindActionCreators({
+             selectUser: selectUser
+           }, dispatch)
+}
+
+ export default connect(mapStateToProps,matchDispatchToProps)(Search);
 //
 //
 //

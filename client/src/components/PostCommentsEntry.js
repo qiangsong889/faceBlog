@@ -27,7 +27,7 @@ class PostCommentsEntry extends React.Component {
 
         return(
             <div>
-              {this.state.user.userName}: {this.props.comment.comments}
+              {this.state.user.displayName}: {this.props.comment.comments}
             <br />
             </div>
         )

@@ -40298,7 +40298,8 @@ var App = function (_React$Component) {
         if (user) {
           _axios2.default.get('api/user', {
             params: {
-              uid: user.uid
+              uid: user.uid,
+              displayName: user.displayName
             }
           }).then(function (response) {
             console.log('successfully fetch data of user from server here is the data', response.data);
@@ -52514,6 +52515,8 @@ var _firebaseAuth = __webpack_require__(56);
 
 var _firebaseAuth2 = _interopRequireDefault(_firebaseAuth);
 
+var _actions = __webpack_require__(68);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52535,6 +52538,7 @@ var Search = function (_React$Component) {
         key: 'handleLogoutClick',
         value: function handleLogoutClick() {
             console.log('logout button been clicked');
+            this.props.selectUser(null);
             _firebaseAuth2.default.logout();
             //
         }
@@ -52581,7 +52585,13 @@ function mapStateToProps(state) {
     };
 }
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(Search);
+function matchDispatchToProps(dispatch) {
+    return (0, _redux.bindActionCreators)({
+        selectUser: _actions.selectUser
+    }, dispatch);
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, matchDispatchToProps)(Search);
 //
 //
 //
@@ -52761,7 +52771,8 @@ var User = function (_React$Component) {
                     'div',
                     null,
                     'this.props.userInfo is loaded!!!!',
-                    _react2.default.createElement(_Posts2.default, null)
+                    _react2.default.createElement(_Posts2.default, null),
+                    _react2.default.createElement(_Bio2.default, null)
                 ) : _react2.default.createElement(
                     'div',
                     null,
@@ -53738,7 +53749,8 @@ var Posts = function (_React$Component) {
             var _this2 = this;
 
             _axios2.default.get('api/post', {
-                params: { userId: this.props.userLoad.id }
+                params: { userId: this.props.userLoad.id
+                }
             }).then(function (res) {
                 _this2.props.loadPosts(res.data);
                 // console.log('here should be array of posts', this.props.postsLoad)
@@ -53757,7 +53769,7 @@ var Posts = function (_React$Component) {
                 img: null,
                 userId: this.props.userLoad.id
             };
-            console.log('here is the payload!!===>>>>', payload);
+            console.log('!!!!!!!!!!!!!!!!!!!here is the payload!!===>>>>', payload);
             _axios2.default.post('api/post', payload).then(function (res) {
                 console.log('successfully post post to server');
                 //    this.props.getUsersInfoFromServer();
@@ -54102,7 +54114,7 @@ var PostCommentsEntry = function (_React$Component) {
             return _react2.default.createElement(
                 'div',
                 null,
-                this.state.user.userName,
+                this.state.user.displayName,
                 ': ',
                 this.props.comment.comments,
                 _react2.default.createElement('br', null)
@@ -54161,6 +54173,11 @@ var Bio = function (_React$Component) {
     }
 
     _createClass(Bio, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            // axios.
+        }
+    }, {
         key: 'toggleBio',
         value: function toggleBio() {
             var _this2 = this;
@@ -54236,6 +54253,7 @@ function mapStateToProps(state) {
     return {
         userLoad: state.userLoad,
         active_user: state.active_user
+
     };
 }
 

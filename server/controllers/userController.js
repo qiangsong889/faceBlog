@@ -18,12 +18,18 @@ const userController = {
                 // })
                 res.send(user[0])
             }else{
+                console.log('here is the query when you tring to create user', query)
                 Users.create({
-                    userName: query.uid
+                    userName: query.uid,
+                    displayName: query.displayName
                 })
                 .then(response=> {
                     // console.log('here is the response if user just been created ==>>', response)
-                    res.send({userName: uid, comments: 'user has no info cause just created'})
+                    Users.findAll( {where: {userName: query.uid}})
+                         .then(response=> {
+                             res.send(response[0])
+                         })
+                         .catch(err=> {console.log('Error after creating a user and send it back', err)})
                 })
                 .catch(err=> {console.log('having problem creating user into table==>>>',err)})
             }

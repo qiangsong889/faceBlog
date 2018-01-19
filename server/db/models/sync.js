@@ -1,10 +1,10 @@
-const Comments = require('./commentsModel')
-const Posts = require('./postsModel')
 const Users = require('./usersModel')
+const Posts = require('./postsModel')
+const Comments = require('./commentsModel')
 
+Posts.belongsTo(Users);
 Comments.belongsTo(Users);
 Comments.belongsTo(Posts);
-Posts.belongsTo(Users);
 
 
 Users.sync()

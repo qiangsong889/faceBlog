@@ -3,9 +3,10 @@ const commentsController = require('./commentsController')
 
 const postsController = {
     getUsersPosts: (req, res)=> {
+        console.log('here is the req.query!!!!!!', req.query)
       Posts.findAll({where:{userId: req.query.userId}})
         .then(posts=> {
-            // console.log('query Posts table, result====>>>', posts)
+            console.log('query Posts table, result====>>>', posts)
 
                 res.send(posts)
 

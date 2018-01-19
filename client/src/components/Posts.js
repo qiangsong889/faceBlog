@@ -14,7 +14,8 @@ class Posts extends React.Component{
     }
     update() {
         axios.get('api/post', {
-            params: {userId : this.props.userLoad.id}
+            params: {userId : this.props.userLoad.id  
+            }
         })
         .then(res=> {
             this.props.loadPosts(res.data);
@@ -30,7 +31,7 @@ class Posts extends React.Component{
         img: null,
         userId: this.props.userLoad.id
       }
-      console.log('here is the payload!!===>>>>', payload)
+      console.log('!!!!!!!!!!!!!!!!!!!here is the payload!!===>>>>', payload)
       axios.post('api/post', payload)
            .then(res=> {
                console.log('successfully post post to server')

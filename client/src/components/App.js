@@ -17,7 +17,8 @@ class App extends React.Component {
         if (user) {
           axios.get('api/user', {
             params: {
-                uid: user.uid
+                uid: user.uid,
+                displayName: user.displayName    
             }
           })
           .then(response=> {

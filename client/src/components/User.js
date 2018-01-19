@@ -49,7 +49,7 @@ class User extends React.Component {
             <div>
                 this.props.userInfo is loaded!!!!
                 <Posts />
-                {/* <Bio update={this.getUsersInfoFromServer.bind(this)}/> */}
+                <Bio />
                 {/* <Friends /> */}
             </div>
             :

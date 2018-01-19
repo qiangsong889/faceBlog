@@ -10,6 +10,9 @@ class Bio extends React.Component {
           toggle:false
        }
     }
+    componentWillMount() {
+        // axios.
+    }
     toggleBio() {
         this.setState({
             toggle: !this.state.toggle
@@ -87,7 +90,8 @@ class Bio extends React.Component {
 function mapStateToProps(state){
     return{
         userLoad: state.userLoad,
-        active_user: state.active_user
+        active_user: state.active_user,
+
     }
 }
 
