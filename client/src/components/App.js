@@ -9,6 +9,7 @@ import Search from './Search'
 import Options from './Options'
 import selectUser from '../actions'
 import axios from 'axios'
+import SearchFriends from './SearchFriends'
 
 
 class App extends React.Component {
@@ -41,6 +42,7 @@ class App extends React.Component {
           this.props.active_user ? 
           <div>
           <Search />
+          <SearchFriends />
           <Options />
         </div>
         :

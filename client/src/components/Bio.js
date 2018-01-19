@@ -11,7 +11,6 @@ class Bio extends React.Component {
        }
     }
     componentWillMount() {
-        // axios.
     }
     toggleBio() {
         this.setState({
@@ -20,7 +19,7 @@ class Bio extends React.Component {
         if(this.state.toggle){
             const bioButton = document.getElementsByClassName('bioInfo')
             const bio = {
-                userName: this.props.active_user.user[0].userName,
+                userId: this.props.userId,
                 displayName: bioButton[0].value,
                 bio: bioButton[1].value,
                 location: bioButton[2].value,
@@ -41,41 +40,41 @@ class Bio extends React.Component {
     render() {
       return(
           <div>
-              displayName: {this.props.userLoad.user[0].displayName}
+              displayName: {this.props.userLoad.displayName}
                   {
                       this.state.toggle?
                       <div>
-                          <input className="bioInfo" defaultValue={this.props.userLoad.user[0].displayName}/>
+                          <input className="bioInfo" defaultValue={this.props.userLoad.displayName}/>
                       </div>
                       :
                       <div>
                       </div>
                   }
-              bio: {this.props.userLoad.user[0].bio}
+              bio: {this.props.userLoad.bio}
               {
                       this.state.toggle?
                       <div>
-                          <input className="bioInfo" defaultValue={this.props.userLoad.user[0].bio}/>
+                          <input className="bioInfo" defaultValue={this.props.userLoad.bio}/>
                       </div>
                       :
                       <div>
                       </div>
                   }
-              location: {this.props.userLoad.user[0].location}
+              location: {this.props.userLoad.location}
               {
                       this.state.toggle?
                       <div>
-                          <input className="bioInfo" defaultValue={this.props.userLoad.user[0].location}/>
+                          <input className="bioInfo" defaultValue={this.props.userLoad.location}/>
                       </div>
                       :
                       <div>
                       </div>
                   }
-              school: {this.props.userLoad.user[0].school}
+              school: {this.props.userLoad.school}
               {
                       this.state.toggle?
                       <div>
-                          <input className="bioInfo" defaultValue={this.props.userLoad.user[0].school}/>
+                          <input className="bioInfo" defaultValue={this.props.userLoad.school}/>
                       </div>
                       :
                       <div>
@@ -91,6 +90,7 @@ function mapStateToProps(state){
     return{
         userLoad: state.userLoad,
         active_user: state.active_user,
+        userId: state.userId
 
     }
 }

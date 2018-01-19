@@ -58,7 +58,7 @@ const userController = {
             location: req.body.location,
             school: req.body.school
         }
-        Users.update(bio, {where: {userName: req.body.userName}})
+        Users.update(bio, {where: {id: req.body.userId}})
              .then(response=> {
                  res.send()
              })

@@ -2,7 +2,8 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import firebase from '../firebaseAuth'
-import { selectUser } from '../actions'
+import { selectUser, searchFriends } from '../actions'
+import axios from 'axios'
 
 class Search extends React.Component{
 
@@ -12,14 +13,25 @@ class Search extends React.Component{
         firebase.logout();
         //
     }
+    handleSearch(){
+        console.log('searching for ', document.getElementById('searchName').value)
+        axios.get('api/search', {
+            params:{displayName: document.getElementById('searchName').value}
+        })
+        .then(res=> {
+            console.log('here is the result', res.data)
+            this.props.searchFriends(res.data)
+        })
+        .catch(err=> {console.log('Error searching', err)})
+    }
 
     render() {
         if(this.props.active_user){
             return (
                 <div>
                     <h3>faceBlog</h3>
-                    <input />
-                    <button>SEARCH</button>
+                    <input id="searchName"/>
+                    <button onClick={this.handleSearch.bind(this)}>SEARCH</button>
                     <button onClick={this.handleLogoutClick.bind(this)}>LOGOUT</button>
                 </div>
             )
@@ -41,7 +53,8 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
     return bindActionCreators({
-             selectUser: selectUser
+             selectUser: selectUser,
+             searchFriends: searchFriends
            }, dispatch)
 }
 

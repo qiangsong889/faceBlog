@@ -16,14 +16,17 @@ class User extends React.Component {
         }else{
 
             // this.getUsersInfoFromServer();
-            axios.get('api/targetUser', {
-                params:{userId: this.props.userId}
-            })
-            .then(res=> {
-                this.props.loadUser(res.data)
-            })
-            .catch(err=>{console.log('Error fetching uses information',err)})
+            this.update()
         }
+    }
+    update() {
+        axios.get('api/targetUser', {
+            params:{userId: this.props.userId}
+        })
+        .then(res=> {
+            this.props.loadUser(res.data[0])
+        })
+        .catch(err=>{console.log('Error fetching uses information',err)})
     }
     // getUsersInfoFromServer()  {
     //     let uid=()=> {
@@ -47,9 +50,8 @@ class User extends React.Component {
         {
             this.props.userLoad ? 
             <div>
-                this.props.userInfo is loaded!!!!
                 <Posts />
-                {/* <Bio /> */}
+                <Bio update={this.update.bind(this)}/>
                 {/* <Friends /> */}
             </div>
             :

@@ -9037,6 +9037,13 @@ var loadPosts = exports.loadPosts = function loadPosts(posts) {
     };
 };
 
+var searchFriends = exports.searchFriends = function searchFriends(friends) {
+    return {
+        type: "FRIEND_SEARCH",
+        payload: friends
+    };
+};
+
 /***/ }),
 /* 69 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -40272,6 +40279,10 @@ var _axios = __webpack_require__(24);
 
 var _axios2 = _interopRequireDefault(_axios);
 
+var _SearchFriends = __webpack_require__(323);
+
+var _SearchFriends2 = _interopRequireDefault(_SearchFriends);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -40322,6 +40333,7 @@ var App = function (_React$Component) {
           'div',
           null,
           _react2.default.createElement(_Search2.default, null),
+          _react2.default.createElement(_SearchFriends2.default, null),
           _react2.default.createElement(_Options2.default, null)
         ) : _react2.default.createElement(
           'div',
@@ -52517,6 +52529,10 @@ var _firebaseAuth2 = _interopRequireDefault(_firebaseAuth);
 
 var _actions = __webpack_require__(68);
 
+var _axios = __webpack_require__(24);
+
+var _axios2 = _interopRequireDefault(_axios);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52543,6 +52559,21 @@ var Search = function (_React$Component) {
             //
         }
     }, {
+        key: 'handleSearch',
+        value: function handleSearch() {
+            var _this2 = this;
+
+            console.log('searching for ', document.getElementById('searchName').value);
+            _axios2.default.get('api/search', {
+                params: { displayName: document.getElementById('searchName').value }
+            }).then(function (res) {
+                console.log('here is the result', res.data);
+                _this2.props.searchFriends(res.data);
+            }).catch(function (err) {
+                console.log('Error searching', err);
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             if (this.props.active_user) {
@@ -52554,10 +52585,10 @@ var Search = function (_React$Component) {
                         null,
                         'faceBlog'
                     ),
-                    _react2.default.createElement('input', null),
+                    _react2.default.createElement('input', { id: 'searchName' }),
                     _react2.default.createElement(
                         'button',
-                        null,
+                        { onClick: this.handleSearch.bind(this) },
                         'SEARCH'
                     ),
                     _react2.default.createElement(
@@ -52587,7 +52618,8 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
     return (0, _redux.bindActionCreators)({
-        selectUser: _actions.selectUser
+        selectUser: _actions.selectUser,
+        searchFriends: _actions.searchFriends
     }, dispatch);
 }
 
@@ -52728,22 +52760,27 @@ var User = function (_React$Component) {
     _createClass(User, [{
         key: 'componentWillMount',
         value: function componentWillMount() {
-            var _this2 = this;
-
             if (!this.props.userId) {
                 this.props.selectUser(this.props.active_user.id);
                 this.props.loadUser(this.props.active_user);
             } else {
 
                 // this.getUsersInfoFromServer();
-                _axios2.default.get('api/targetUser', {
-                    params: { userId: this.props.userId }
-                }).then(function (res) {
-                    _this2.props.loadUser(res.data);
-                }).catch(function (err) {
-                    console.log('Error fetching uses information', err);
-                });
+                this.update();
             }
+        }
+    }, {
+        key: 'update',
+        value: function update() {
+            var _this2 = this;
+
+            _axios2.default.get('api/targetUser', {
+                params: { userId: this.props.userId }
+            }).then(function (res) {
+                _this2.props.loadUser(res.data[0]);
+            }).catch(function (err) {
+                console.log('Error fetching uses information', err);
+            });
         }
         // getUsersInfoFromServer()  {
         //     let uid=()=> {
@@ -52770,8 +52807,8 @@ var User = function (_React$Component) {
                 this.props.userLoad ? _react2.default.createElement(
                     'div',
                     null,
-                    'this.props.userInfo is loaded!!!!',
-                    _react2.default.createElement(_Posts2.default, null)
+                    _react2.default.createElement(_Posts2.default, null),
+                    _react2.default.createElement(_Bio2.default, { update: this.update.bind(this) })
                 ) : _react2.default.createElement(
                     'div',
                     null,
@@ -54172,9 +54209,7 @@ var Bio = function (_React$Component) {
 
     _createClass(Bio, [{
         key: 'componentWillMount',
-        value: function componentWillMount() {
-            // axios.
-        }
+        value: function componentWillMount() {}
     }, {
         key: 'toggleBio',
         value: function toggleBio() {
@@ -54186,7 +54221,7 @@ var Bio = function (_React$Component) {
             if (this.state.toggle) {
                 var bioButton = document.getElementsByClassName('bioInfo');
                 var bio = {
-                    userName: this.props.active_user.user[0].userName,
+                    userId: this.props.userId,
                     displayName: bioButton[0].value,
                     bio: bioButton[1].value,
                     location: bioButton[2].value,
@@ -54208,32 +54243,32 @@ var Bio = function (_React$Component) {
                 'div',
                 null,
                 'displayName: ',
-                this.props.userLoad.user[0].displayName,
+                this.props.userLoad.displayName,
                 this.state.toggle ? _react2.default.createElement(
                     'div',
                     null,
-                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.user[0].displayName })
+                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.displayName })
                 ) : _react2.default.createElement('div', null),
                 'bio: ',
-                this.props.userLoad.user[0].bio,
+                this.props.userLoad.bio,
                 this.state.toggle ? _react2.default.createElement(
                     'div',
                     null,
-                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.user[0].bio })
+                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.bio })
                 ) : _react2.default.createElement('div', null),
                 'location: ',
-                this.props.userLoad.user[0].location,
+                this.props.userLoad.location,
                 this.state.toggle ? _react2.default.createElement(
                     'div',
                     null,
-                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.user[0].location })
+                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.location })
                 ) : _react2.default.createElement('div', null),
                 'school: ',
-                this.props.userLoad.user[0].school,
+                this.props.userLoad.school,
                 this.state.toggle ? _react2.default.createElement(
                     'div',
                     null,
-                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.user[0].school })
+                    _react2.default.createElement('input', { className: 'bioInfo', defaultValue: this.props.userLoad.school })
                 ) : _react2.default.createElement('div', null),
                 _react2.default.createElement(
                     'button',
@@ -54250,7 +54285,8 @@ var Bio = function (_React$Component) {
 function mapStateToProps(state) {
     return {
         userLoad: state.userLoad,
-        active_user: state.active_user
+        active_user: state.active_user,
+        userId: state.userId
 
     };
 }
@@ -54583,6 +54619,10 @@ var _postsLoad = __webpack_require__(320);
 
 var _postsLoad2 = _interopRequireDefault(_postsLoad);
 
+var _friendsSearch = __webpack_require__(322);
+
+var _friendsSearch2 = _interopRequireDefault(_friendsSearch);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var allReducers = (0, _redux.combineReducers)({
@@ -54591,7 +54631,8 @@ var allReducers = (0, _redux.combineReducers)({
     userId: _userId2.default,
     userLoad: _userLoad2.default,
     toggleComment: _toggleComment2.default,
-    postsLoad: _postsLoad2.default
+    postsLoad: _postsLoad2.default,
+    friendsSearch: _friendsSearch2.default
 });
 
 module.exports = allReducers;
@@ -54746,6 +54787,122 @@ exports.default = function () {
     }
     return state;
 };
+
+/***/ }),
+/* 322 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case "FRIEND_SEARCH":
+            return action.payload;
+            break;
+    }
+    return state;
+};
+
+/***/ }),
+/* 323 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(16);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SearchFriends = function (_React$Component) {
+    _inherits(SearchFriends, _React$Component);
+
+    function SearchFriends() {
+        _classCallCheck(this, SearchFriends);
+
+        return _possibleConstructorReturn(this, (SearchFriends.__proto__ || Object.getPrototypeOf(SearchFriends)).apply(this, arguments));
+    }
+
+    _createClass(SearchFriends, [{
+        key: 'addFriend',
+        value: function addFriend(name) {
+            console.log('name been clicked', name);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.props.friendsSearch ? _react2.default.createElement(
+                    'div',
+                    null,
+                    this.props.friendsSearch.map(function (friend) {
+                        return _react2.default.createElement(
+                            'li',
+                            { key: friend.id },
+                            _react2.default.createElement(
+                                'div',
+                                { onClick: function onClick(e) {
+                                        return _this2.addFriend(friend);
+                                    } },
+                                friend.displayName
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                null,
+                                ' location:',
+                                friend.location
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                null,
+                                ' school: ',
+                                friend.school
+                            )
+                        );
+                    })
+                ) : _react2.default.createElement('div', null)
+            );
+        }
+    }]);
+
+    return SearchFriends;
+}(_react2.default.Component);
+
+function mapStateToProps(state) {
+    return {
+        friendsSearch: state.friendsSearch
+    };
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(SearchFriends);
 
 /***/ })
 /******/ ]);

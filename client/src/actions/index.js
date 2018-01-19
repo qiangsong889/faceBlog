@@ -40,3 +40,10 @@ export const loadPosts = (posts) => {
         payload: posts
     }
 }
+
+export const searchFriends=(friends)=> {
+    return {
+        type: "FRIEND_SEARCH",
+        payload: friends
+    }
+}
