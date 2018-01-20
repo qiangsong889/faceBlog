@@ -28,13 +28,14 @@ class FriendList extends React.Component {
             <div>
             {
               this.props.friendsLoad?
-              <div>
+              <div>FRIEND LIST
                   {this.props.friendsLoad.map(friend=> {
-                      <FriendListEntry friend={friend} key={friend.id}/>
+                    return <FriendListEntry friend={friend} key={friend.id}/>
                   })}
               </div>
               :
               <div>
+                  ?????
               </div>
             }
             </div>

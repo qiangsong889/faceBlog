@@ -9009,6 +9009,7 @@ var selectOption = exports.selectOption = function selectOption(option) {
 };
 
 var selectUser = exports.selectUser = function selectUser(id) {
+    console.log('action/selectUser here is the id ', id);
     return {
         type: "USER_ID",
         payload: id
@@ -52576,6 +52577,12 @@ var Search = function (_React$Component) {
     _createClass(Search, [{
         key: 'componentWillMount',
         value: function componentWillMount() {
+
+            this.update();
+        }
+    }, {
+        key: 'update',
+        value: function update() {
             var _this2 = this;
 
             _axios2.default.get('api/friendRequest', {
@@ -52620,41 +52627,11 @@ var Search = function (_React$Component) {
                 showRequest: !this.state.showRequest
             });
         }
-        // request() {
-        //     return(
-        //         <div>
-        //             {
-        //                 this.state.showRequest?
-        //                 <div>
-        //                     {
-        //                         this.props.friendsLoad ?
-        //                         <div>
-        //                             {this.props.friendsLoad.map(friend=> {
-        //                                 return (
-        //                                     <div>
-        //                                         {
-        //                                             friend.isFriend === 'pending'
-        //                                         }
-        //                                     </div>
-        //                                 )
-        //                             })}
-        //                         </div>
-        //                         :
-        //                         <div>
-        //                         </div>
-        //                     }
-        //                 </div>
-        //                 :
-        //                 <div>
-        //                 </div>
-        //             }
-        //          </div>   
-        //     )
-        // }
-
     }, {
         key: 'friendRequest',
         value: function friendRequest() {
+            var _this4 = this;
+
             return _react2.default.createElement(
                 'div',
                 null,
@@ -52662,7 +52639,7 @@ var Search = function (_React$Component) {
                     'div',
                     null,
                     this.state.requests.map(function (request) {
-                        return _react2.default.createElement(_RequestListEntry2.default, { request: request, key: request.id });
+                        return _react2.default.createElement(_RequestListEntry2.default, { friendId: _this4.props.active_user.id, request: request, key: request.id });
                     })
                 ) : _react2.default.createElement('div', null)
             );
@@ -52670,7 +52647,7 @@ var Search = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this4 = this;
+            var _this5 = this;
 
             if (this.props.active_user) {
                 return _react2.default.createElement(
@@ -52695,7 +52672,7 @@ var Search = function (_React$Component) {
                     _react2.default.createElement(
                         'button',
                         { onClick: function onClick(e) {
-                                return _this4.showRequest();
+                                return _this5.showRequest();
                             } },
                         ' showFriendRequest '
                     ),
@@ -54963,16 +54940,33 @@ var SearchFriends = function (_React$Component) {
 
     _createClass(SearchFriends, [{
         key: 'addFriend',
-        value: function addFriend(friend) {
-            // console.log('name been clicked',friend)
-            _axios2.default.post('api/friendList', {
-                userId: this.props.active_user.id,
-                friendId: friend.id
-            }).then(function (res) {
-                console.log('you just added a friend res==>>', res);
-            }).catch(function (err) {
-                console.log('Error adding friend', err);
-            });
+        value: function addFriend(target) {
+            var isFriend = false;
+            if (this.props.active_user.id === target.id) {
+                isFriend = true;
+                return;
+            } else {
+                this.props.friendsLoad.forEach(function (friend) {
+                    if (friend.isFriend === 'yes' && target.id === friend.id) {
+                        isFriend = true;
+                    }
+                });
+            }
+            if (!isFriend) {
+                _axios2.default.post('api/friendList', {
+                    userId: this.props.active_user.id,
+                    friendId: target.id
+                }).then(function (res) {
+
+                    console.log('you just send a add friend request', res);
+                    return;
+                }).catch(function (err) {
+                    console.log('Error adding friend', err);
+                });
+            }
+            // if(
+            //     console.log('button clicked', this.props.friendsLoad)
+            // )
         }
     }, {
         key: 'render',
@@ -54991,10 +54985,15 @@ var SearchFriends = function (_React$Component) {
                             { key: friend.id },
                             _react2.default.createElement(
                                 'div',
-                                { onClick: function onClick(e) {
-                                        return _this2.addFriend(friend);
-                                    } },
-                                friend.displayName
+                                null,
+                                friend.displayName,
+                                _react2.default.createElement(
+                                    'button',
+                                    { onClick: function onClick(e) {
+                                            return _this2.addFriend(friend);
+                                        } },
+                                    'add'
+                                )
                             ),
                             _react2.default.createElement(
                                 'div',
@@ -55021,7 +55020,8 @@ var SearchFriends = function (_React$Component) {
 function mapStateToProps(state) {
     return {
         friendsSearch: state.friendsSearch,
-        active_user: state.active_user
+        active_user: state.active_user,
+        friendsLoad: state.friendsLoad
     };
 }
 
@@ -55105,10 +55105,15 @@ var FriendList = function (_React$Component) {
                 this.props.friendsLoad ? _react2.default.createElement(
                     'div',
                     null,
+                    'FRIEND LIST',
                     this.props.friendsLoad.map(function (friend) {
-                        _react2.default.createElement(_friendListEntry2.default, { friend: friend, key: friend.id });
+                        return _react2.default.createElement(_friendListEntry2.default, { friend: friend, key: friend.id });
                     })
-                ) : _react2.default.createElement('div', null)
+                ) : _react2.default.createElement(
+                    'div',
+                    null,
+                    '?????'
+                )
             );
         }
     }]);
@@ -55171,6 +55176,16 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _axios = __webpack_require__(24);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _redux = __webpack_require__(15);
+
+var _actions = __webpack_require__(68);
+
+var _reactRedux = __webpack_require__(16);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -55198,27 +55213,44 @@ var FriendListEntry = function (_React$Component) {
         value: function componentWillMount() {
             var _this2 = this;
 
-            axios.get('api//targetUser', {
-                params: { friendId: friend.friendId }
+            _axios2.default.get('api//targetUser', {
+                params: { userId: this.props.friend.friendId }
             }).then(function (res) {
+                console.log('FRIENDLISTENTRY============>', res);
                 _this2.setState({
-                    friendName: res.data.displayName
+                    friendName: res.data[0].displayName
                 });
             }).catch(function (err) {
                 console.log('Error fetching friend infomation', err);
             });
         }
     }, {
+        key: 'checkFriend',
+        value: function checkFriend() {
+            // this.props.selectUser(this.props.friend.id);
+            console.log('clicked', this.props.friend);
+            this.props.selectUser(this.props.friend.friendId);
+            this.props.selectOption('user');
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var _this3 = this;
+
             return _react2.default.createElement(
                 'div',
                 null,
                 this.props.friend.isFriend === 'yes' ? _react2.default.createElement(
                     'div',
-                    null,
+                    { onClick: function onClick(e) {
+                            return _this3.checkFriend();
+                        } },
                     this.state.friendName
-                ) : _react2.default.createElement('div', null)
+                ) : _react2.default.createElement(
+                    'div',
+                    null,
+                    'each friend'
+                )
             );
         }
     }]);
@@ -55226,7 +55258,17 @@ var FriendListEntry = function (_React$Component) {
     return FriendListEntry;
 }(_react2.default.Component);
 
-exports.default = FriendListEntry;
+function mapStateToProps(state) {
+    return {};
+}
+function matchDispatchToProps(dispatch) {
+    return (0, _redux.bindActionCreators)({
+        selectUser: _actions.selectUser,
+        selectOption: _actions.selectOption
+    }, dispatch);
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, matchDispatchToProps)(FriendListEntry);
 
 /***/ }),
 /* 327 */
@@ -55289,8 +55331,24 @@ var RequestListEntry = function (_React$Component) {
             });
         }
     }, {
+        key: 'accept',
+        value: function accept(request) {
+            console.log('button clikced', this.props.request);
+            var payload = {
+                userId: request.userId,
+                friendId: this.props.friendId
+            };
+            _axios2.default.post('api/friendRequest', payload).then(function (res) {
+                console.log('accept the friend request, here is the result', res);
+            }).catch(function (err) {
+                console.log('Error sending accept request', err);
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var _this3 = this;
+
             return _react2.default.createElement(
                 'div',
                 null,
@@ -55298,7 +55356,9 @@ var RequestListEntry = function (_React$Component) {
                 ' wants to add you as friends ',
                 _react2.default.createElement(
                     'button',
-                    null,
+                    { onClick: function onClick(e) {
+                            return _this3.accept(_this3.props.request);
+                        } },
                     'accept'
                 ),
                 _react2.default.createElement(

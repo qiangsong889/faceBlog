@@ -32,6 +32,7 @@ router.route('/friendList')
 
 router.route('/friendRequest')
   .get(friendListController.getRequest)
+  .post(friendListController.acceptRequest)
 
 
 module.exports = router;

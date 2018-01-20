@@ -13,6 +13,7 @@ export const selectOption= (option) => {
 }
 
 export const selectUser = (id) => {
+    console.log('action/selectUser here is the id ', id)
     return {
         type: "USER_ID",
         payload: id

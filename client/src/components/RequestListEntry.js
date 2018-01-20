@@ -22,12 +22,24 @@ class RequestListEntry extends React.Component {
         })
         .catch(err=> {console.log('Error getting users info in RequestListEntry, ',err)})
     }
+    accept(request) {
+        console.log('button clikced', this.props.request)
+        const payload = {
+            userId: request.userId,
+            friendId: this.props.friendId
+        }
+        axios.post('api/friendRequest', payload)
+             .then(res=> {
+                console.log('accept the friend request, here is the result', res)
+             })
+             .catch(err=> {console.log('Error sending accept request', err)})
+    }
 
     render() {
         return(
             <div>
                 {/* friendId:{this.props.request.friendId}<br /> */}
-                {this.state.user.displayName} wants to add you as friends <button>accept</button><button>decline</button><br />
+                {this.state.user.displayName} wants to add you as friends <button onClick={(e)=>this.accept(this.props.request)}>accept</button><button>decline</button><br />
                 {/* isFriend:{this.props.request.isFriend}<br /> */}
             </div>
         )

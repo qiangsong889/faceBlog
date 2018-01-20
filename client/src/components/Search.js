@@ -15,6 +15,10 @@ class Search extends React.Component{
         }
     }
     componentWillMount () {
+
+        this.update();
+    }
+    update() {
         axios.get('api/friendRequest', {
             params: {friendId: this.props.active_user.id, isFriend: 'pending'}
         })
@@ -25,7 +29,6 @@ class Search extends React.Component{
             })
         })
         .catch(err=> {console.log('having problem searching friend request,' ,err)})
-
     }
     handleLogoutClick() {
         console.log('logout button been clicked')
@@ -51,37 +54,6 @@ class Search extends React.Component{
             showRequest: !this.state.showRequest
         })
     }
-    // request() {
-    //     return(
-    //         <div>
-    //             {
-    //                 this.state.showRequest?
-    //                 <div>
-    //                     {
-    //                         this.props.friendsLoad ?
-    //                         <div>
-    //                             {this.props.friendsLoad.map(friend=> {
-    //                                 return (
-    //                                     <div>
-    //                                         {
-    //                                             friend.isFriend === 'pending'
-    //                                         }
-    //                                     </div>
-    //                                 )
-    //                             })}
-    //                         </div>
-    //                         :
-    //                         <div>
-    //                         </div>
-    //                     }
-    //                 </div>
-    //                 :
-    //                 <div>
-    //                 </div>
-    //             }
-    //          </div>   
-    //     )
-    // }
     friendRequest() {
         return(
             <div>
@@ -89,7 +61,7 @@ class Search extends React.Component{
                     this.state.requests&&this.state.showRequest?
                     <div>
                         {this.state.requests.map(request => {
-                           return <RequestListEntry request={request} key={request.id}/>
+                           return <RequestListEntry friendId={this.props.active_user.id} request={request} key={request.id}/>
                         })}
                     </div>
                     :
