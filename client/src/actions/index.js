@@ -36,7 +36,7 @@ export const toggleCommentAction = (id) => {
 export const loadPosts = (posts) => {
     console.log('inside of loadPosts here is the posts', posts)
     return{
-        type: "HAHA",
+        type: "POSTS_LOAD",
         payload: posts
     }
 }
@@ -44,6 +44,14 @@ export const loadPosts = (posts) => {
 export const searchFriends=(friends)=> {
     return {
         type: "FRIEND_SEARCH",
+        payload: friends
+    }
+}
+
+export const loadFriends = (friends) => {
+    console.log('iiiiiiiinside of loadFriends here is the friends', friends)
+    return {
+        type: "FRIENDS_LOAD",
         payload: friends
     }
 }

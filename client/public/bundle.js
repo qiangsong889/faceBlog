@@ -9032,7 +9032,7 @@ var toggleCommentAction = exports.toggleCommentAction = function toggleCommentAc
 var loadPosts = exports.loadPosts = function loadPosts(posts) {
     console.log('inside of loadPosts here is the posts', posts);
     return {
-        type: "HAHA",
+        type: "POSTS_LOAD",
         payload: posts
     };
 };
@@ -9040,6 +9040,14 @@ var loadPosts = exports.loadPosts = function loadPosts(posts) {
 var searchFriends = exports.searchFriends = function searchFriends(friends) {
     return {
         type: "FRIEND_SEARCH",
+        payload: friends
+    };
+};
+
+var loadFriends = exports.loadFriends = function loadFriends(friends) {
+    console.log('iiiiiiiinside of loadFriends here is the friends', friends);
+    return {
+        type: "FRIENDS_LOAD",
         payload: friends
     };
 };
@@ -40283,6 +40291,10 @@ var _SearchFriends = __webpack_require__(323);
 
 var _SearchFriends2 = _interopRequireDefault(_SearchFriends);
 
+var _FriendList = __webpack_require__(324);
+
+var _FriendList2 = _interopRequireDefault(_FriendList);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -40334,6 +40346,7 @@ var App = function (_React$Component) {
           null,
           _react2.default.createElement(_Search2.default, null),
           _react2.default.createElement(_SearchFriends2.default, null),
+          _react2.default.createElement(_FriendList2.default, null),
           _react2.default.createElement(_Options2.default, null)
         ) : _react2.default.createElement(
           'div',
@@ -52533,6 +52546,10 @@ var _axios = __webpack_require__(24);
 
 var _axios2 = _interopRequireDefault(_axios);
 
+var _RequestListEntry = __webpack_require__(327);
+
+var _RequestListEntry2 = _interopRequireDefault(_RequestListEntry);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52544,13 +52561,35 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Search = function (_React$Component) {
     _inherits(Search, _React$Component);
 
-    function Search() {
+    function Search(props) {
         _classCallCheck(this, Search);
 
-        return _possibleConstructorReturn(this, (Search.__proto__ || Object.getPrototypeOf(Search)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (Search.__proto__ || Object.getPrototypeOf(Search)).call(this, props));
+
+        _this.state = {
+            showRequest: false,
+            requests: []
+        };
+        return _this;
     }
 
     _createClass(Search, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            var _this2 = this;
+
+            _axios2.default.get('api/friendRequest', {
+                params: { friendId: this.props.active_user.id, isFriend: 'pending' }
+            }).then(function (res) {
+                console.log('inside of search, trying to search friend request, here is the request', res.data);
+                _this2.setState({
+                    requests: res.data
+                });
+            }).catch(function (err) {
+                console.log('having problem searching friend request,', err);
+            });
+        }
+    }, {
         key: 'handleLogoutClick',
         value: function handleLogoutClick() {
             console.log('logout button been clicked');
@@ -52561,21 +52600,78 @@ var Search = function (_React$Component) {
     }, {
         key: 'handleSearch',
         value: function handleSearch() {
-            var _this2 = this;
+            var _this3 = this;
 
             console.log('searching for ', document.getElementById('searchName').value);
             _axios2.default.get('api/search', {
                 params: { displayName: document.getElementById('searchName').value }
             }).then(function (res) {
                 console.log('here is the result', res.data);
-                _this2.props.searchFriends(res.data);
+                _this3.props.searchFriends(res.data);
             }).catch(function (err) {
                 console.log('Error searching', err);
             });
         }
     }, {
+        key: 'showRequest',
+        value: function showRequest() {
+            console.log('show request button clicked');
+            this.setState({
+                showRequest: !this.state.showRequest
+            });
+        }
+        // request() {
+        //     return(
+        //         <div>
+        //             {
+        //                 this.state.showRequest?
+        //                 <div>
+        //                     {
+        //                         this.props.friendsLoad ?
+        //                         <div>
+        //                             {this.props.friendsLoad.map(friend=> {
+        //                                 return (
+        //                                     <div>
+        //                                         {
+        //                                             friend.isFriend === 'pending'
+        //                                         }
+        //                                     </div>
+        //                                 )
+        //                             })}
+        //                         </div>
+        //                         :
+        //                         <div>
+        //                         </div>
+        //                     }
+        //                 </div>
+        //                 :
+        //                 <div>
+        //                 </div>
+        //             }
+        //          </div>   
+        //     )
+        // }
+
+    }, {
+        key: 'friendRequest',
+        value: function friendRequest() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.state.requests && this.state.showRequest ? _react2.default.createElement(
+                    'div',
+                    null,
+                    this.state.requests.map(function (request) {
+                        return _react2.default.createElement(_RequestListEntry2.default, { request: request, key: request.id });
+                    })
+                ) : _react2.default.createElement('div', null)
+            );
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var _this4 = this;
+
             if (this.props.active_user) {
                 return _react2.default.createElement(
                     'div',
@@ -52595,7 +52691,15 @@ var Search = function (_React$Component) {
                         'button',
                         { onClick: this.handleLogoutClick.bind(this) },
                         'LOGOUT'
-                    )
+                    ),
+                    _react2.default.createElement(
+                        'button',
+                        { onClick: function onClick(e) {
+                                return _this4.showRequest();
+                            } },
+                        ' showFriendRequest '
+                    ),
+                    this.friendRequest()
                 );
             } else {
                 return _react2.default.createElement(
@@ -52612,7 +52716,8 @@ var Search = function (_React$Component) {
 
 function mapStateToProps(state) {
     return {
-        active_user: state.active_user
+        active_user: state.active_user,
+        friendsLoad: state.friendsLoad
     };
 }
 
@@ -54623,6 +54728,10 @@ var _friendsSearch = __webpack_require__(322);
 
 var _friendsSearch2 = _interopRequireDefault(_friendsSearch);
 
+var _friendsLoad = __webpack_require__(325);
+
+var _friendsLoad2 = _interopRequireDefault(_friendsLoad);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var allReducers = (0, _redux.combineReducers)({
@@ -54632,7 +54741,8 @@ var allReducers = (0, _redux.combineReducers)({
     userLoad: _userLoad2.default,
     toggleComment: _toggleComment2.default,
     postsLoad: _postsLoad2.default,
-    friendsSearch: _friendsSearch2.default
+    friendsSearch: _friendsSearch2.default,
+    friendsLoad: _friendsLoad2.default
 });
 
 module.exports = allReducers;
@@ -54758,7 +54868,7 @@ exports.default = function () {
     var action = arguments[1];
 
     switch (action.type) {
-        case "HAHA":
+        case "POSTS_LOAD":
             return action.payload;
             break;
     }
@@ -54830,6 +54940,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(16);
 
+var _axios = __webpack_require__(24);
+
+var _axios2 = _interopRequireDefault(_axios);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -54849,8 +54963,16 @@ var SearchFriends = function (_React$Component) {
 
     _createClass(SearchFriends, [{
         key: 'addFriend',
-        value: function addFriend(name) {
-            console.log('name been clicked', name);
+        value: function addFriend(friend) {
+            // console.log('name been clicked',friend)
+            _axios2.default.post('api/friendList', {
+                userId: this.props.active_user.id,
+                friendId: friend.id
+            }).then(function (res) {
+                console.log('you just added a friend res==>>', res);
+            }).catch(function (err) {
+                console.log('Error adding friend', err);
+            });
         }
     }, {
         key: 'render',
@@ -54898,11 +55020,301 @@ var SearchFriends = function (_React$Component) {
 
 function mapStateToProps(state) {
     return {
-        friendsSearch: state.friendsSearch
+        friendsSearch: state.friendsSearch,
+        active_user: state.active_user
     };
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(SearchFriends);
+
+/***/ }),
+/* 324 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _axios = __webpack_require__(24);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _reactRedux = __webpack_require__(16);
+
+var _redux = __webpack_require__(15);
+
+var _actions = __webpack_require__(68);
+
+var _friendListEntry = __webpack_require__(326);
+
+var _friendListEntry2 = _interopRequireDefault(_friendListEntry);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FriendList = function (_React$Component) {
+    _inherits(FriendList, _React$Component);
+
+    function FriendList() {
+        _classCallCheck(this, FriendList);
+
+        return _possibleConstructorReturn(this, (FriendList.__proto__ || Object.getPrototypeOf(FriendList)).apply(this, arguments));
+    }
+
+    _createClass(FriendList, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            this.getFriends();
+        }
+    }, {
+        key: 'getFriends',
+        value: function getFriends() {
+            var _this2 = this;
+
+            _axios2.default.get('api/friendList', {
+                params: { userId: this.props.active_user.id }
+            }).then(function (res) {
+                console.log('tring to get friend, here is the result==>', res);
+                _this2.props.loadFriends(res.data);
+                // let isFriend = (res.data)
+            }).catch(function (err) {
+                console.log('Error getting friendList', err);
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.props.friendsLoad ? _react2.default.createElement(
+                    'div',
+                    null,
+                    this.props.friendsLoad.map(function (friend) {
+                        _react2.default.createElement(_friendListEntry2.default, { friend: friend, key: friend.id });
+                    })
+                ) : _react2.default.createElement('div', null)
+            );
+        }
+    }]);
+
+    return FriendList;
+}(_react2.default.Component);
+
+function mapStateToProps(state) {
+    return {
+        active_user: state.active_user,
+        friendsLoad: state.friendsLoad
+    };
+}
+
+function matchDispatchToProps(dispatch) {
+    return (0, _redux.bindActionCreators)({
+        loadFriends: _actions.loadFriends
+    }, dispatch);
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, matchDispatchToProps)(FriendList);
+
+/***/ }),
+/* 325 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case "FRIENDS_LOAD":
+            return action.payload;
+            break;
+    }
+    return state;
+};
+
+/***/ }),
+/* 326 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FriendListEntry = function (_React$Component) {
+    _inherits(FriendListEntry, _React$Component);
+
+    function FriendListEntry(props) {
+        _classCallCheck(this, FriendListEntry);
+
+        var _this = _possibleConstructorReturn(this, (FriendListEntry.__proto__ || Object.getPrototypeOf(FriendListEntry)).call(this, props));
+
+        _this.state = {
+            friendName: ''
+        };
+        return _this;
+    }
+
+    _createClass(FriendListEntry, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            var _this2 = this;
+
+            axios.get('api//targetUser', {
+                params: { friendId: friend.friendId }
+            }).then(function (res) {
+                _this2.setState({
+                    friendName: res.data.displayName
+                });
+            }).catch(function (err) {
+                console.log('Error fetching friend infomation', err);
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.props.friend.isFriend === 'yes' ? _react2.default.createElement(
+                    'div',
+                    null,
+                    this.state.friendName
+                ) : _react2.default.createElement('div', null)
+            );
+        }
+    }]);
+
+    return FriendListEntry;
+}(_react2.default.Component);
+
+exports.default = FriendListEntry;
+
+/***/ }),
+/* 327 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _axios = __webpack_require__(24);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var RequestListEntry = function (_React$Component) {
+    _inherits(RequestListEntry, _React$Component);
+
+    function RequestListEntry(props) {
+        _classCallCheck(this, RequestListEntry);
+
+        var _this = _possibleConstructorReturn(this, (RequestListEntry.__proto__ || Object.getPrototypeOf(RequestListEntry)).call(this, props));
+
+        _this.state = {
+            user: {}
+        };
+        return _this;
+    }
+
+    _createClass(RequestListEntry, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            var _this2 = this;
+
+            console.log('inside of REQUESTLISTENTRY , this is the request', this.props.request);
+            _axios2.default.get('api/targetUser', {
+                params: { userId: this.props.request.userId }
+            }).then(function (res) {
+                console.log('GOT ALL INFO OF USER SEND ADDING FRIEND', res.data);
+                _this2.setState({
+                    user: res.data[0]
+                });
+            }).catch(function (err) {
+                console.log('Error getting users info in RequestListEntry, ', err);
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.state.user.displayName,
+                ' wants to add you as friends ',
+                _react2.default.createElement(
+                    'button',
+                    null,
+                    'accept'
+                ),
+                _react2.default.createElement(
+                    'button',
+                    null,
+                    'decline'
+                ),
+                _react2.default.createElement('br', null)
+            );
+        }
+    }]);
+
+    return RequestListEntry;
+}(_react2.default.Component);
+
+exports.default = RequestListEntry;
 
 /***/ })
 /******/ ]);

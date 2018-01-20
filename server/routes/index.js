@@ -4,6 +4,7 @@ const userController = require('../controllers/userController')
 const postsController = require('../controllers/postsController')
 const commentsController = require('../controllers/commentsController')
 const searchController = require('../controllers/searchController')
+const friendListController = require('../controllers/friendListController')
 
 router.route('/user')
   .get(userController.getUsersInfo)
@@ -24,5 +25,13 @@ router.route('/bio')
 
 router.route('/search')
   .get(searchController.searchUser)
+
+router.route('/friendList')
+  .post(friendListController.addFriend)
+  .get(friendListController.getFriends)
+
+router.route('/friendRequest')
+  .get(friendListController.getRequest)
+
 
 module.exports = router;

@@ -41,7 +41,7 @@ const userController = {
           })
     },
     getTargetUserInfo: (req, res)=>{
-        // console.log('getTargetUserInfo, req.query', req.query)
+        console.log('getTargetUserInfo, req.query', req.query)
         Users.findAll({
             where: {id: req.query.userId}
         })

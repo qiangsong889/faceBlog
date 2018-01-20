@@ -6,6 +6,7 @@ import userLoad from './userLoad'
 import toggleComment from './toggleComment'
 import postsLoad from './postsLoad'
 import friendsSearch from './friendsSearch'
+import friendsLoad from './friendsLoad'
 
 const allReducers = combineReducers({
     active_user: active_user,
@@ -14,7 +15,8 @@ const allReducers = combineReducers({
     userLoad: userLoad,
     toggleComment: toggleComment,
     postsLoad: postsLoad,
-    friendsSearch: friendsSearch
+    friendsSearch: friendsSearch,
+    friendsLoad: friendsLoad
 })
 
 module.exports = allReducers;

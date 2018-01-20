@@ -10,7 +10,7 @@ import Options from './Options'
 import selectUser from '../actions'
 import axios from 'axios'
 import SearchFriends from './SearchFriends'
-
+import FriendList from './FriendList'
 
 class App extends React.Component {
   componentWillMount() {
@@ -43,6 +43,7 @@ class App extends React.Component {
           <div>
           <Search />
           <SearchFriends />
+          <FriendList />
           <Options />
         </div>
         :

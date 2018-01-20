@@ -1,9 +1,18 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import axios from 'axios'
 
 class SearchFriends extends React.Component {
-    addFriend (name) {
-        console.log('name been clicked',name)
+    addFriend (friend) {
+        // console.log('name been clicked',friend)
+        axios.post('api/friendList', {
+            userId: this.props.active_user.id,
+            friendId: friend.id
+        })
+        .then(res=> {
+            console.log('you just added a friend res==>>', res)
+        })
+        .catch(err=> {console.log('Error adding friend', err)})
     }
     render() {
         return (
@@ -32,7 +41,8 @@ class SearchFriends extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        friendsSearch: state.friendsSearch
+        friendsSearch: state.friendsSearch,
+        active_user: state.active_user
     }
 }
 

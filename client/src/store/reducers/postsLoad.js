@@ -9,7 +9,7 @@
 
 export default (state=null, action) => {
     switch(action.type) {
-        case "HAHA":
+        case "POSTS_LOAD":
           return action.payload
           break;
     }

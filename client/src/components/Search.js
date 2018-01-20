@@ -4,9 +4,29 @@ import { connect } from 'react-redux'
 import firebase from '../firebaseAuth'
 import { selectUser, searchFriends } from '../actions'
 import axios from 'axios'
+import RequestListEntry from './RequestListEntry'
 
 class Search extends React.Component{
+    constructor(props) {
+        super(props)
+        this.state ={
+            showRequest : false,
+            requests: []
+        }
+    }
+    componentWillMount () {
+        axios.get('api/friendRequest', {
+            params: {friendId: this.props.active_user.id, isFriend: 'pending'}
+        })
+        .then(res=> {
+            console.log('inside of search, trying to search friend request, here is the request', res.data)
+            this.setState({
+                requests: res.data
+            })
+        })
+        .catch(err=> {console.log('having problem searching friend request,' ,err)})
 
+    }
     handleLogoutClick() {
         console.log('logout button been clicked')
         this.props.selectUser(null);
@@ -25,6 +45,61 @@ class Search extends React.Component{
         .catch(err=> {console.log('Error searching', err)})
     }
 
+    showRequest() {
+        console.log('show request button clicked')
+        this.setState({
+            showRequest: !this.state.showRequest
+        })
+    }
+    // request() {
+    //     return(
+    //         <div>
+    //             {
+    //                 this.state.showRequest?
+    //                 <div>
+    //                     {
+    //                         this.props.friendsLoad ?
+    //                         <div>
+    //                             {this.props.friendsLoad.map(friend=> {
+    //                                 return (
+    //                                     <div>
+    //                                         {
+    //                                             friend.isFriend === 'pending'
+    //                                         }
+    //                                     </div>
+    //                                 )
+    //                             })}
+    //                         </div>
+    //                         :
+    //                         <div>
+    //                         </div>
+    //                     }
+    //                 </div>
+    //                 :
+    //                 <div>
+    //                 </div>
+    //             }
+    //          </div>   
+    //     )
+    // }
+    friendRequest() {
+        return(
+            <div>
+                {
+                    this.state.requests&&this.state.showRequest?
+                    <div>
+                        {this.state.requests.map(request => {
+                           return <RequestListEntry request={request} key={request.id}/>
+                        })}
+                    </div>
+                    :
+                    <div>
+                    </div>
+                }
+            </div>
+        )
+    }
+
     render() {
         if(this.props.active_user){
             return (
@@ -33,6 +108,8 @@ class Search extends React.Component{
                     <input id="searchName"/>
                     <button onClick={this.handleSearch.bind(this)}>SEARCH</button>
                     <button onClick={this.handleLogoutClick.bind(this)}>LOGOUT</button>
+                    <button onClick={(e)=>this.showRequest()}> showFriendRequest </button>
+                    {this.friendRequest()}
                 </div>
             )
         }else{
@@ -47,7 +124,8 @@ class Search extends React.Component{
 }
 function mapStateToProps(state) {
     return {
-        active_user: state.active_user
+        active_user: state.active_user,
+        friendsLoad: state.friendsLoad
     }
 }
 
